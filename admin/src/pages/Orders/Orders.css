@@ -1,0 +1,131 @@
+.order {
+  padding: 20px;
+}
+
+.order h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2d2d2d;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #f0522e;
+}
+
+.order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.no-orders {
+  text-align: center;
+  color: #999;
+  font-size: 1rem;
+  padding: 40px 0;
+}
+
+.order-item {
+  display: grid;
+  grid-template-columns: 60px 2fr 80px 80px 100px 160px;
+  align-items: center;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  padding: 16px 20px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s;
+}
+
+.order-item:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+}
+
+.order-item img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #fff4f0;
+  padding: 6px;
+}
+
+.order-item-food {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.order-item-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 3px;
+}
+
+.order-item-address {
+  font-size: 0.78rem;
+  color: #888;
+  margin-bottom: 3px;
+}
+
+.order-item-address p {
+  margin: 0;
+}
+
+.order-item-phone {
+  font-size: 0.8rem;
+  color: #555;
+}
+
+.order-item p {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+  margin: 0;
+}
+
+.order-payment-status {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.order-payment-status.paid {
+  background: #e6f9f0;
+  color: #1a8a4a;
+  border: 1px solid #9de0bc;
+}
+
+.order-payment-status.unpaid {
+  background: #fff0f0;
+  color: #c0392b;
+  border: 1px solid #f5a9a0;
+}
+
+.order-item select {
+  padding: 7px 10px;
+  border-radius: 7px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  font-size: 0.82rem;
+  color: #333;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.order-item select:focus {
+  border-color: #f0522e;
+}
+
+@media (max-width: 900px) {
+  .order-item {
+    grid-template-columns: 50px 1fr;
+    grid-template-rows: auto;
+  }
+}
