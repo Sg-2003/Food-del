@@ -8,7 +8,7 @@ export const StoreContext = createContext({
     addToCart: () => { },
     removeFromCart: () => { },
     getTotalCartAmount: () => 0,
-    url: 'http://localhost:4000',
+    url: 'https://backend-beryl-alpha-41.vercel.app',
     token: '',
     setToken: () => { }
 })
@@ -16,7 +16,7 @@ export const StoreContext = createContext({
 const StoreContextProvider = (props) => {
 
     const [cartItems, setCartItems] = useState({});
-    const url = 'http://localhost:4000'
+    const url = 'https://backend-beryl-alpha-41.vercel.app'
     const [token, setToken] = useState('');
     const [food_list, setFoodList] = useState([])
 

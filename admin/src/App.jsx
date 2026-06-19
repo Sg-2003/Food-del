@@ -12,7 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
 
-   const url = 'http://localhost:4000'
+   const url = 'https://backend-beryl-alpha-41.vercel.app'
 
   return (
     <div>
