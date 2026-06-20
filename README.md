@@ -40,10 +40,59 @@ Tomato is a premium, full-stack food delivery application built using the MERN s
 ## 📦 Project Structure
 
 ```
-├── admin/       # React administration dashboard
-├── backend/     # Express API, MongoDB models, controller logic
-└── frontend/    # React customer portal
+├── [admin/](./admin)       # React administration dashboard
+├── [backend/](./backend)     # Express API, MongoDB models, controller logic
+└── [frontend/](./frontend)    # React customer portal
 ```
+
+---
+
+## 🖥️ Application Pages & Modules
+
+### 🛒 Frontend Pages (Customer Portal)
+- **Home (`/`) - [Home.jsx](./frontend/src/pages/Home/Home.jsx)**: 
+  - Dynamic category selector featuring interactive transitions to filter the menu.
+  - Live food list showcasing descriptions, pricing, and visual food items.
+  - Cart counters embedded inside food item cards for quick adding/removing.
+  - Global real-time search bar integrated within the navbar header.
+- **Cart (`/cart`) - [Cart.jsx](./frontend/src/pages/Cart/Cart.jsx)**: 
+  - Summarizes ordered items, item quantities, and item-specific costs.
+  - Dynamic checkout calculations including subtotal, flat delivery fee, and grand total.
+  - User authorization checker directing guest users to log in before checking out.
+- **Place Order (`/order`) - [PlaceOrder.jsx](./frontend/src/pages/PlaceOrder/PlaceOrder.jsx)**: 
+  - Checkout form capturing delivery address details (Name, Address, Phone, etc.).
+  - Action button that processes the cart details, communicates with Stripe API, and redirects user to checkout.
+- **Verify Payment (`/verify`) - [Verify.jsx](./frontend/src/pages/Verify/Verify.jsx)**: 
+  - A loading spinner landing page that processes the Stripe redirection callback.
+  - Extracts the URL query parameters `success` and `orderId`, and fires verification request to the backend.
+- **My Orders (`/myorders`) - [MyOrders.jsx](./frontend/src/pages/MyOrders/MyOrders.jsx)**: 
+  - Shows order history with list of purchased items, prices, and status.
+  - **Live Status Tracker**: A progress bar visualization (Food Processing ➔ Out for Delivery ➔ Delivered).
+  - **Payment Retry**: "Pay Now" link for unpaid orders to re-trigger a Stripe Session.
+
+### 💼 Admin Portal Pages
+- **Add Product (`/add`) - [Add.jsx](./admin/src/pages/Add/Add.jsx)**: 
+  - Form to upload an image of the dish, name, description, price, and select its category from a dropdown.
+- **List Products (`/list`) - [List.jsx](./admin/src/pages/List/List.jsx)**: 
+  - Renders all products registered in the database in a table with product image, name, category, price, and a delete control.
+- **Manage Orders (`/orders`) - [Orders.jsx](./admin/src/pages/Orders/Orders.jsx)**: 
+  - Order dashboard displays order content details, delivery address, phone, item quantities, price, and status.
+  - Includes a dropdown selector to update the order status in real-time.
+
+### ⚙️ Backend Architecture & Flow
+- **[server.js](./backend/server.js)**: Core entry point. Initialized with Express, CORS, and JSON parser middleware. Mounts all API routers and exposes static `/images` endpoint pointing to the dynamic `uploads/` directory.
+- **Database ([models/](./backend/models))**: 
+  - **[foodModel.js](./backend/models/foodModel.js)**: Schema mapping name, description, price, image, and category.
+  - **[userModel.js](./backend/models/userModel.js)**: Schema mapping user name, email, password, and shopping cart dictionary (`cartData`).
+  - **[orderModel.js](./backend/models/orderModel.js)**: Schema tracking order items, amount, delivery address, payment status, status history, and Stripe `sessionId`.
+- **Middleware ([middleware/](./backend/middleware))**:
+  - **[auth.js](./backend/middleware/auth.js)**: Inspects headers for a JWT token, decodes and verifies it, and attaches the user's database ID to `req.userId` for downstream routes.
+- **Controllers ([controllers/](./backend/controllers)) & Routing ([routes/](./backend/routes))**:
+  - Modular controller and routing files separating processing logic from Express endpoints:
+    - **Food**: [foodController.js](./backend/controllers/foodController.js) & [foodRoute.js](./backend/routes/foodRoute.js)
+    - **User**: [userController.js](./backend/controllers/userController.js) & [userRoute.js](./backend/routes/userRoute.js)
+    - **Cart**: [cartController.js](./backend/controllers/cartController.js) & [cartRoute.js](./backend/routes/cartRoute.js)
+    - **Order**: [oderController.js](./backend/controllers/oderController.js) (Note the filename spelling) & [orderRoute.js](./backend/routes/orderRoute.js)
 
 ---
 
@@ -110,6 +159,45 @@ cd "Full Stack Food Delivery App"
    ```bash
    npm run dev
    ```
+
+## 💳 Stripe Payment Gateway Integration
+
+Tomato features a secure end-to-end payment processing flow using the official **Stripe API**.
+
+### 🔄 The Checkout & Verification Flow
+
+```mermaid
+sequenceDiagram
+    actor Customer
+    participant Frontend as Frontend (React)
+    participant Backend as Backend (Express)
+    participant Stripe as Stripe API
+    participant Database as MongoDB
+
+    Customer->>Frontend: Click "Proceed to Checkout"
+    Frontend->>Backend: POST /api/order/place (items, address, amount)
+    Note over Backend: Save order as "Unpaid"<br/>Clear User Cart
+    Backend->>Stripe: stripe.checkout.sessions.create()
+    Stripe-->>Backend: Return Stripe Session URL
+    Backend-->>Frontend: Return Session URL
+    Frontend->>Customer: Redirect to Stripe Hosted Checkout
+    Customer->>Stripe: Authorize Payment (Visa, Mastercard, etc.)
+    Stripe->>Frontend: Redirect to /verify?success=true&orderId=ID
+    Frontend->>Backend: POST /api/order/verify (orderId, success)
+    Backend->>Stripe: stripe.checkout.sessions.retrieve(sessionId)
+    Note over Backend: Verify status is "paid"
+    Backend->>Database: Update order payment to true
+    Backend-->>Frontend: Success Response
+    Frontend->>Customer: Show Success & Track Order
+```
+
+### 🛠️ Key Integration Details
+1. **Dynamic Line Items**: The backend constructs an array of line items from the user's cart, converting the USD prices into cents (multiplied by `100`) as required by Stripe.
+2. **Delivery Fee Injection**: A flat delivery charge of `$2.00` is automatically appended to the Stripe transaction session as a standalone line item.
+3. **Session ID Tracking**: The generated `sessionId` is stored in the MongoDB order document to allow verification during the callback.
+4. **Secure Verification**: When the customer is redirected to the `/verify` page, the backend fetches the session from Stripe via `stripe.checkout.sessions.retrieve` to inspect the `payment_status === "paid"` server-to-server.
+5. **Payment Retry Option**: For orders where checkout was cancelled or failed, the user's cart is not lost and the order remains registered as unpaid. The customer can retry payment from the **My Orders** screen, which requests `/api/order/pay` to generate a new Stripe session link for that specific order.
+6. **Graceful Developer Fallback (Mock Mode)**: If no Stripe secret key is supplied or Stripe fails to reach servers, the code falls back to generating a mock session token `mock_session_<order_id>` and redirects the developer straight to the verification success path, enabling seamless offline local testing.
 
 ---
 
