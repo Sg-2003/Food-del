@@ -33,6 +33,13 @@
     background-color: white;
     font-size: max(1vw, 13px);
     border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.header-contents button:hover{
+    background-color: #fff0e2;
+    color: tomato;
+    transform: scale(1.05);
 }
 @media (max-width:1050px){
   .header-contents {

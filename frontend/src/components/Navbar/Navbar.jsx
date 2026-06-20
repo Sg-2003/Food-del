@@ -7,8 +7,9 @@ import { StoreContext } from '../../context/StoreContext';
 const Navbar = ({ setShowLogin }) => {
 
     const [menu, setMenu] = useState("menu");
+    const [showSearch, setShowSearch] = useState(false);
 
-    const { getTotalCartAmount, token, setToken } = useContext(StoreContext);
+    const { getTotalCartAmount, token, setToken, searchQuery, setSearchQuery } = useContext(StoreContext);
 
     const navigate = useNavigate();
 
@@ -16,6 +17,14 @@ const Navbar = ({ setShowLogin }) => {
         localStorage.removeItem('token');
         setToken('');
         navigate('/');
+    }
+
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+        if (window.location.pathname !== "/") {
+            navigate("/");
+            setMenu("home");
+        }
     }
 
     return (
@@ -28,7 +37,21 @@ const Navbar = ({ setShowLogin }) => {
                 <a href='#footer' onClick={() => setMenu("contact-us")} className={menu === "contact-us" ? "active" : ""}>contact us</a>
             </ul>
             <div className="navbar-right">
-                <img src={assets.search_icon} alt="" />
+                <div className="navbar-search-container">
+                    <input 
+                        type="text" 
+                        className={`navbar-search-input ${showSearch ? "active" : ""}`} 
+                        placeholder="Search food..." 
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                    />
+                    <img 
+                        src={assets.search_icon} 
+                        alt="Search" 
+                        onClick={() => setShowSearch(!showSearch)} 
+                        className="navbar-search-btn"
+                    />
+                </div>
                 <div className="navbar-search-icon">
                     <Link to='/cart'><img src={assets.basket_icon} alt="" /></Link>
                     <div className={getTotalCartAmount() === 0 ? "" : "dot"}></div>

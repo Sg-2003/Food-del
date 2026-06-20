@@ -125,3 +125,40 @@
     display: none;
   }
 }
+
+.navbar-search-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.navbar-search-input {
+  width: 0;
+  opacity: 0;
+  padding: 6px 0px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  outline: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  color: #49557e;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+}
+
+.navbar-search-input.active {
+  width: 150px;
+  opacity: 1;
+  padding: 6px 10px;
+  border-bottom: 2px solid tomato;
+}
+
+.navbar-search-btn {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.navbar-search-btn:hover {
+  transform: scale(1.15);
+}

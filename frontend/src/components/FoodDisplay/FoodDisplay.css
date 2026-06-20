@@ -12,3 +12,14 @@
   gap: 30px;
   row-gap: 50px;
 }
+.no-results-msg {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 18px;
+  color: #7f8c8d;
+  font-family: 'Outfit', sans-serif;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #ced4da;
+}
