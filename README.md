@@ -110,7 +110,7 @@ Tomato is a premium, full-stack food delivery application built using the MERN s
 #### 1. Clone the repository
 ```bash
 git clone https://github.com/Sg-2003/Food-del.git
-cd "Full Stack Food Delivery App"
+cd Food-del
 ```
 
 #### 2. Backend Setup
