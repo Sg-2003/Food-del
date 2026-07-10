@@ -12,7 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
 
-   const url = 'https://backend-beryl-alpha-41.vercel.app'
+   const url = import.meta.env.VITE_BACKEND_URL || 'https://backend-beryl-alpha-41.vercel.app'
 
   return (
     <div>
